@@ -1,0 +1,33 @@
+#Version de docker compose à utiliser
+version: '3'
+
+#Services compris par le compose
+services:
+  #le micro-service de visualisation sur html
+  web:
+    #Création de l'imaga à partir du fichier Dockerfile
+    build: .
+    #Ports à utiliser
+    ports:
+      - "8000:5000"
+    #Environnement, flask debug pour avoir des informations, et ensuite les informations pour acceder à la base de données
+    environment:
+      FLASK_DEBUG: "true"
+      FLASK_DB_HOST: mariadb
+      FLASK_DB_USER: flask
+      FLASK_DB_PASSWORD: flask
+      FLASK_DB_NAME: MOCK_DATA
+    
+  #Le micro-service pour la base de données
+  mariadb:
+    #A partir de l'image mariadb sur dockerhub
+    image: mariadb
+    #environnement, les informations pour la base de donnés comme utilisateur, apssword, le nom de la base de données
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: MOCK_DATA
+      MYSQL_USER: flask
+      MYSQL_PASSWORD: flask
+    #Sauvegarde de données persistentes et création de la base de données à partir du fichier client.sql
+    volumes:
+      - ./client.sql:/docker-entrypoint-initdb.d/client.sql
